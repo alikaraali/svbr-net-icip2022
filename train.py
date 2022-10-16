@@ -132,7 +132,7 @@ def train_model(model, opt, tfrecord_dir1, tfrecord_dir2, ckpoint_file,
         print(f'Time Passed : {elapsed:.2f}')
                
 
-def train_network(tfrecord_dir1, tfrecord_dir2, ckpoint_file, INIT_LR, BS):
+def train_network(tfrecord_dir1, tfrecord_dir2, ckpoint_file, INIT_LR, epoch1, epoch2, BS):
     """_summary_
 
     Args:
@@ -145,7 +145,8 @@ def train_network(tfrecord_dir1, tfrecord_dir2, ckpoint_file, INIT_LR, BS):
     opt = Adam(learning_rate=INIT_LR)
 
     model = make_model1()
-    train_model(model, opt, tfrecord_dir1, tfrecord_dir2, ckpoint_file, INIT_LR, 2, 2, BS)
+    train_model(model, opt, tfrecord_dir1, tfrecord_dir2, 
+		ckpoint_file, INIT_LR, epoch1, epoch2, BS)
 
 
 def get_args():
@@ -160,13 +161,21 @@ def get_args():
                         type=str, help='TF.Record file to validate \n', 
                         default='tfrecords/dataset_validation.tfrecords')
 
+    parser.add_argument('-e1', metavar='--epoch1', required=False,
+                        type=int, help='Epoch count with true PSF \n',
+                        default=32)
+
+    parser.add_argument('-e2', metavar='--epoch2', required=False,
+                        type=int, help='Epoch count with the estimated PSF \n',
+                        default=32)
+
     parser.add_argument('-c', metavar='--checkpoint_folder', required=False,
                         type=str, help='A path to save the checkpoint files \n', 
                         default='training/')
 
     args = parser.parse_args()
 
-    return args.t, args.v, args.c
+    return args.t, args.v, args.e1, args.e2, args.c
 
 
 
@@ -174,6 +183,6 @@ if __name__ == '__main__':
 
     BS = 12
     INIT_LR = 1e-3
-    tf_train, tf_val, chekpoint_path = get_args()
+    tf_train, tf_val, epoch1, epoch2, chekpoint_path = get_args()
     
-    train_network(tf_train, tf_val, chekpoint_path, INIT_LR, BS)
+    train_network(tf_train, tf_val, chekpoint_path, INIT_LR, epoch1, epoch2, BS)
